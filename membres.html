@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Membres ASAA</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main>
+        <h2>Gestion des Membres</h2>
+        <div id="adminSection" style="display:none;">
+            <form id="memberForm">
+                <input type="text" id="nom" placeholder="Nom" required>
+                <input type="text" id="numero" placeholder="Numéro" required>
+                <input type="text" id="role" placeholder="Rôle" required>
+                <button type="submit">Ajouter</button>
+            </form>
+        </div>
+        <table border="1" id="membersTable">
+            <thead>
+                <tr><th>Nom</th><th>Numéro</th><th>Rôle</th><th>Action</th></tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </main>
+
+    <script>
+        const table = document.querySelector('#membersTable tbody');
+        const adminSection = document.getElementById("adminSection");
+
+        let members = JSON.parse(localStorage.getItem('members')) || [];
+
+        function loadMembers() {
+            table.innerHTML = "";
+            members.forEach((member, index) => {
+                const row = `<tr>
+                    <td>${member.nom}</td>
+                    <td>${member.numero}</td>
+                    <td>${member.role}</td>
+                    <td>${localStorage.getItem("isAdmin") === "true" ? `<button onclick="removeMember(${index})">Supprimer</button>` : ''}</td>
+                </tr>`;
+                table.innerHTML += row;
+            });
+        }
+
+        function removeMember(index) {
+            members.splice(index, 1);
+            localStorage.setItem('members', JSON.stringify(members));
+            loadMembers();
+        }
+
+        document.getElementById('memberForm')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const nom = document.getElementById('nom').value;
+            const numero = document.getElementById('numero').value;
+            const role = document.getElementById('role').value;
+            members.push({ nom, numero, role });
+            localStorage.setItem('members', JSON.stringify(members));
+            this.reset();
+            loadMembers();
+        });
+
+        if (localStorage.getItem("isAdmin") === "true") {
+            adminSection.style.display = "block";
+        }
+
+        loadMembers();
+    </script>
+</body>
+</html>

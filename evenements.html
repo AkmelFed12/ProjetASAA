@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Événements ASAA</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+    <h2>FINALE QUIZ ISLAMIQUE 2025</h2>
+
+    <div id="adminSection" style="display: none;">
+        <form id="candidateForm">
+            <input type="text" id="nom" placeholder="Nom" required>
+            <input type="text" id="numero" placeholder="Numéro" required>
+            <input type="file" id="photo" required>
+            <button type="submit">Ajouter Candidat</button>
+        </form>
+    </div>
+
+    <table border="1" id="candidatesTable">
+        <thead>
+            <tr><th>Photo</th><th>Nom</th><th>Numéro</th></tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</main>
+
+<script>
+    const section = document.getElementById("adminSection");
+    const table = document.querySelector("#candidatesTable tbody");
+    let candidats = JSON.parse(localStorage.getItem('candidats')) || [];
+
+    function loadCandidats() {
+        table.innerHTML = "";
+        candidats.forEach(c => {
+            table.innerHTML += `
+                <tr>
+                    <td><img src="${c.photo}" width="50" height="50"></td>
+                    <td>${c.nom}</td>
+                    <td>${c.numero}</td>
+                </tr>`;
+        });
+    }
+
+    document.getElementById('candidateForm')?.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const nom = document.getElementById('nom').value;
+        const numero = document.getElementById('numero').value;
+        const file = document.getElementById('photo').files[0];
+
+        const reader = new FileReader();
+        reader.onload = function() {
+            candidats.push({ nom, numero, photo: reader.result });
+            localStorage.setItem('candidats', JSON.stringify(candidats));
+            loadCandidats();
+        };
+        reader.readAsDataURL(file);
+        this.reset();
+    });
+
+    if (localStorage.getItem("isAdmin") === "true") {
+        section.style.display = "block";
+    }
+
+    loadCandidats();
+</script>
+</body>
+</html>

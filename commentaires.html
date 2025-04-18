@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Commentaires ASAA</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+    <h2>Commentaires</h2>
+    <form id="commentForm">
+        <input type="text" id="nom" placeholder="Votre nom" required>
+        <textarea id="message" placeholder="Votre message" required></textarea>
+        <button type="submit">Envoyer</button>
+    </form>
+
+    <div id="commentList"></div>
+</main>
+
+<script>
+    const form = document.getElementById("commentForm");
+    const list = document.getElementById("commentList");
+    let comments = JSON.parse(localStorage.getItem("comments")) || [];
+
+    function loadComments() {
+        list.innerHTML = "";
+        comments.forEach(c => {
+            list.innerHTML += `<p><strong>${c.nom}:</strong> ${c.message}</p>`;
+        });
+    }
+
+    form.addEventListener("submit", function(e) {
+        e.preventDefault();
+        const nom = document.getElementById("nom").value;
+        const message = document.getElementById("message").value;
+        comments.push({ nom, message });
+        localStorage.setItem("comments", JSON.stringify(comments));
+        this.reset();
+        loadComments();
+    });
+
+    loadComments();
+</script>
+</body>
+</html>
